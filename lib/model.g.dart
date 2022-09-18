@@ -21,6 +21,11 @@ const TeacherSchema = CollectionSchema(
       id: 0,
       name: r'name',
       type: IsarType.string,
+    ),
+    r'tid': PropertySchema(
+      id: 1,
+      name: r'tid',
+      type: IsarType.long,
     )
   },
   estimateSize: _teacherEstimateSize,
@@ -81,6 +86,7 @@ void _teacherSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.name);
+  writer.writeLong(offsets[1], object.tid);
 }
 
 Teacher _teacherDeserialize(
@@ -93,6 +99,7 @@ Teacher _teacherDeserialize(
     reader.readStringOrNull(offsets[0]),
   );
   object.id = id;
+  object.tid = reader.readLong(offsets[1]);
   return object;
 }
 
@@ -105,6 +112,8 @@ P _teacherDeserializeProp<P>(
   switch (propertyId) {
     case 0:
       return (reader.readStringOrNull(offset)) as P;
+    case 1:
+      return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -477,6 +486,58 @@ extension TeacherQueryFilter
       ));
     });
   }
+
+  QueryBuilder<Teacher, Teacher, QAfterFilterCondition> tidEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'tid',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Teacher, Teacher, QAfterFilterCondition> tidGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'tid',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Teacher, Teacher, QAfterFilterCondition> tidLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'tid',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Teacher, Teacher, QAfterFilterCondition> tidBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'tid',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
 }
 
 extension TeacherQueryObject
@@ -554,6 +615,18 @@ extension TeacherQuerySortBy on QueryBuilder<Teacher, Teacher, QSortBy> {
       return query.addSortBy(r'name', Sort.desc);
     });
   }
+
+  QueryBuilder<Teacher, Teacher, QAfterSortBy> sortByTid() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tid', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Teacher, Teacher, QAfterSortBy> sortByTidDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tid', Sort.desc);
+    });
+  }
 }
 
 extension TeacherQuerySortThenBy
@@ -581,6 +654,18 @@ extension TeacherQuerySortThenBy
       return query.addSortBy(r'name', Sort.desc);
     });
   }
+
+  QueryBuilder<Teacher, Teacher, QAfterSortBy> thenByTid() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tid', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Teacher, Teacher, QAfterSortBy> thenByTidDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'tid', Sort.desc);
+    });
+  }
 }
 
 extension TeacherQueryWhereDistinct
@@ -589,6 +674,12 @@ extension TeacherQueryWhereDistinct
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Teacher, Teacher, QDistinct> distinctByTid() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'tid');
     });
   }
 }
@@ -604,6 +695,12 @@ extension TeacherQueryProperty
   QueryBuilder<Teacher, String?, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
+    });
+  }
+
+  QueryBuilder<Teacher, int, QQueryOperations> tidProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'tid');
     });
   }
 }
@@ -668,7 +765,7 @@ const StudentSchema = CollectionSchema(
       id: 6831978244928165592,
       name: r'teacher',
       target: r'Teacher',
-      single: true,
+      single: false,
     )
   },
   embeddedSchemas: {},
@@ -713,6 +810,7 @@ Student _studentDeserialize(
     reader.readStringOrNull(offsets[0]),
   );
   object.id = id;
+  object.teacherID = reader.readLongOrNull(offsets[1]);
   return object;
 }
 
@@ -1300,9 +1398,53 @@ extension StudentQueryLinks
     });
   }
 
-  QueryBuilder<Student, Student, QAfterFilterCondition> teacherIsNull() {
+  QueryBuilder<Student, Student, QAfterFilterCondition> teacherLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'teacher', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<Student, Student, QAfterFilterCondition> teacherIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'teacher', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Student, Student, QAfterFilterCondition> teacherIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'teacher', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<Student, Student, QAfterFilterCondition> teacherLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'teacher', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<Student, Student, QAfterFilterCondition>
+      teacherLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'teacher', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<Student, Student, QAfterFilterCondition> teacherLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'teacher', lower, includeLower, upper, includeUpper);
     });
   }
 }

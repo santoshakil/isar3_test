@@ -5,6 +5,7 @@ part 'model.g.dart';
 @Collection()
 class Teacher {
   Id? id;
+  int tid = DateTime.now().millisecondsSinceEpoch;
   @Index()
   String? name;
   @Backlink(to: 'teacher')
@@ -19,8 +20,14 @@ class Student {
   @Index()
   String? name;
   @Index()
-  int? get teacherID => teacher.value?.id;
-  final teacher = IsarLink<Teacher>();
+  int? teacherID;
+
+  final teacher = IsarLinks<Teacher>();
+
+  void setTeacher(List<Teacher> v) {
+    teacherID = v.first.tid;
+    teacher.addAll(v);
+  }
 
   Student(this.name);
 }
