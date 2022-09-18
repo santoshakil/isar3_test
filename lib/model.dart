@@ -20,14 +20,9 @@ class Student {
   @Index()
   String? name;
   @Index()
-  int? teacherID;
+  int? get teacherID => teacher.value?.tid;
 
-  final teacher = IsarLinks<Teacher>();
-
-  void setTeacher(List<Teacher> v) {
-    teacherID = v.first.tid;
-    teacher.addAll(v);
-  }
+  final teacher = IsarLink<Teacher>();
 
   Student(this.name);
 }

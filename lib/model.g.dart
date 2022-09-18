@@ -765,7 +765,7 @@ const StudentSchema = CollectionSchema(
       id: 6831978244928165592,
       name: r'teacher',
       target: r'Teacher',
-      single: false,
+      single: true,
     )
   },
   embeddedSchemas: {},
@@ -810,7 +810,6 @@ Student _studentDeserialize(
     reader.readStringOrNull(offsets[0]),
   );
   object.id = id;
-  object.teacherID = reader.readLongOrNull(offsets[1]);
   return object;
 }
 
@@ -1398,53 +1397,9 @@ extension StudentQueryLinks
     });
   }
 
-  QueryBuilder<Student, Student, QAfterFilterCondition> teacherLengthEqualTo(
-      int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'teacher', length, true, length, true);
-    });
-  }
-
-  QueryBuilder<Student, Student, QAfterFilterCondition> teacherIsEmpty() {
+  QueryBuilder<Student, Student, QAfterFilterCondition> teacherIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'teacher', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<Student, Student, QAfterFilterCondition> teacherIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'teacher', 0, false, 999999, true);
-    });
-  }
-
-  QueryBuilder<Student, Student, QAfterFilterCondition> teacherLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'teacher', 0, true, length, include);
-    });
-  }
-
-  QueryBuilder<Student, Student, QAfterFilterCondition>
-      teacherLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'teacher', length, include, 999999, true);
-    });
-  }
-
-  QueryBuilder<Student, Student, QAfterFilterCondition> teacherLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'teacher', lower, includeLower, upper, includeUpper);
     });
   }
 }
