@@ -18,7 +18,9 @@ class Student {
   Id? id;
   @Index()
   String? name;
-  final teacher = IsarLinks<Teacher>();
+  @Index()
+  int? get teacherID => teacher.value?.id;
+  final teacher = IsarLink<Teacher>();
 
   Student(this.name);
 }

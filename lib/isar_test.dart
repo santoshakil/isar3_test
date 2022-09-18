@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:isar/isar.dart';
 
 import 'model.dart';
@@ -21,12 +23,15 @@ void isarTest() async {
 }
 
 void _writeTest() {
-  final teachers = List.generate(100, (i) => Teacher('${DateTime.now()}_$i'));
+  // db.students.where();
+  final teachers = List.generate(1000, (i) => Teacher('${DateTime.now()}_$i'));
   final students = List.generate(
     100,
-    (i) => Student('${DateTime.now()}_$i')..teacher.addAll(teachers),
+    (i) => Student('${DateTime.now()}_$i')
+      ..teacher.value = teachers[Random().nextInt(999)],
   );
   db.writeTxnSync(() => db.students.putAllSync(students));
+  // db.writeTxnSync(() => db.students.putAllSync(students));
 }
 
 // void _writeTest() => db.writeTxnSync(

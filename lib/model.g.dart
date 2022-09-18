@@ -623,6 +623,11 @@ const StudentSchema = CollectionSchema(
       id: 0,
       name: r'name',
       type: IsarType.string,
+    ),
+    r'teacherID': PropertySchema(
+      id: 1,
+      name: r'teacherID',
+      type: IsarType.long,
     )
   },
   estimateSize: _studentEstimateSize,
@@ -643,6 +648,19 @@ const StudentSchema = CollectionSchema(
           caseSensitive: true,
         )
       ],
+    ),
+    r'teacherID': IndexSchema(
+      id: -7938106371975798382,
+      name: r'teacherID',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'teacherID',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
     )
   },
   links: {
@@ -650,7 +668,7 @@ const StudentSchema = CollectionSchema(
       id: 6831978244928165592,
       name: r'teacher',
       target: r'Teacher',
-      single: false,
+      single: true,
     )
   },
   embeddedSchemas: {},
@@ -682,6 +700,7 @@ void _studentSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.name);
+  writer.writeLong(offsets[1], object.teacherID);
 }
 
 Student _studentDeserialize(
@@ -706,6 +725,8 @@ P _studentDeserializeProp<P>(
   switch (propertyId) {
     case 0:
       return (reader.readStringOrNull(offset)) as P;
+    case 1:
+      return (reader.readLongOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -728,6 +749,14 @@ extension StudentQueryWhereSort on QueryBuilder<Student, Student, QWhere> {
   QueryBuilder<Student, Student, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+
+  QueryBuilder<Student, Student, QAfterWhere> anyTeacherID() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'teacherID'),
+      );
     });
   }
 }
@@ -859,6 +888,116 @@ extension StudentQueryWhere on QueryBuilder<Student, Student, QWhereClause> {
               includeUpper: false,
             ));
       }
+    });
+  }
+
+  QueryBuilder<Student, Student, QAfterWhereClause> teacherIDIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'teacherID',
+        value: [null],
+      ));
+    });
+  }
+
+  QueryBuilder<Student, Student, QAfterWhereClause> teacherIDIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'teacherID',
+        lower: [null],
+        includeLower: false,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Student, Student, QAfterWhereClause> teacherIDEqualTo(
+      int? teacherID) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'teacherID',
+        value: [teacherID],
+      ));
+    });
+  }
+
+  QueryBuilder<Student, Student, QAfterWhereClause> teacherIDNotEqualTo(
+      int? teacherID) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'teacherID',
+              lower: [],
+              upper: [teacherID],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'teacherID',
+              lower: [teacherID],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'teacherID',
+              lower: [teacherID],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'teacherID',
+              lower: [],
+              upper: [teacherID],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Student, Student, QAfterWhereClause> teacherIDGreaterThan(
+    int? teacherID, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'teacherID',
+        lower: [teacherID],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Student, Student, QAfterWhereClause> teacherIDLessThan(
+    int? teacherID, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'teacherID',
+        lower: [],
+        upper: [teacherID],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<Student, Student, QAfterWhereClause> teacherIDBetween(
+    int? lowerTeacherID,
+    int? upperTeacherID, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'teacherID',
+        lower: [lowerTeacherID],
+        includeLower: includeLower,
+        upper: [upperTeacherID],
+        includeUpper: includeUpper,
+      ));
     });
   }
 }
@@ -1078,6 +1217,75 @@ extension StudentQueryFilter
       ));
     });
   }
+
+  QueryBuilder<Student, Student, QAfterFilterCondition> teacherIDIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'teacherID',
+      ));
+    });
+  }
+
+  QueryBuilder<Student, Student, QAfterFilterCondition> teacherIDIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'teacherID',
+      ));
+    });
+  }
+
+  QueryBuilder<Student, Student, QAfterFilterCondition> teacherIDEqualTo(
+      int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'teacherID',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Student, Student, QAfterFilterCondition> teacherIDGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'teacherID',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Student, Student, QAfterFilterCondition> teacherIDLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'teacherID',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Student, Student, QAfterFilterCondition> teacherIDBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'teacherID',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
 }
 
 extension StudentQueryObject
@@ -1092,53 +1300,9 @@ extension StudentQueryLinks
     });
   }
 
-  QueryBuilder<Student, Student, QAfterFilterCondition> teacherLengthEqualTo(
-      int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'teacher', length, true, length, true);
-    });
-  }
-
-  QueryBuilder<Student, Student, QAfterFilterCondition> teacherIsEmpty() {
+  QueryBuilder<Student, Student, QAfterFilterCondition> teacherIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(r'teacher', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<Student, Student, QAfterFilterCondition> teacherIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'teacher', 0, false, 999999, true);
-    });
-  }
-
-  QueryBuilder<Student, Student, QAfterFilterCondition> teacherLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'teacher', 0, true, length, include);
-    });
-  }
-
-  QueryBuilder<Student, Student, QAfterFilterCondition>
-      teacherLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'teacher', length, include, 999999, true);
-    });
-  }
-
-  QueryBuilder<Student, Student, QAfterFilterCondition> teacherLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'teacher', lower, includeLower, upper, includeUpper);
     });
   }
 }
@@ -1153,6 +1317,18 @@ extension StudentQuerySortBy on QueryBuilder<Student, Student, QSortBy> {
   QueryBuilder<Student, Student, QAfterSortBy> sortByNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Student, Student, QAfterSortBy> sortByTeacherID() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'teacherID', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Student, Student, QAfterSortBy> sortByTeacherIDDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'teacherID', Sort.desc);
     });
   }
 }
@@ -1182,6 +1358,18 @@ extension StudentQuerySortThenBy
       return query.addSortBy(r'name', Sort.desc);
     });
   }
+
+  QueryBuilder<Student, Student, QAfterSortBy> thenByTeacherID() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'teacherID', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Student, Student, QAfterSortBy> thenByTeacherIDDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'teacherID', Sort.desc);
+    });
+  }
 }
 
 extension StudentQueryWhereDistinct
@@ -1190,6 +1378,12 @@ extension StudentQueryWhereDistinct
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Student, Student, QDistinct> distinctByTeacherID() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'teacherID');
     });
   }
 }
@@ -1205,6 +1399,12 @@ extension StudentQueryProperty
   QueryBuilder<Student, String?, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
+    });
+  }
+
+  QueryBuilder<Student, int?, QQueryOperations> teacherIDProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'teacherID');
     });
   }
 }
